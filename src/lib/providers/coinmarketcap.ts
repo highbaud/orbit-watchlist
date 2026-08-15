@@ -1,6 +1,9 @@
-import type { MarketQuote, ResolutionResult } from "@/types";
+import type { MarketQuote, ResolutionCandidate, ResolutionResult } from "@/types";
 import type { ProviderAdapter, ProviderContext } from "@/lib/providers/types";
 import { fetchJson } from "@/lib/providers/types";
+
+const ORIGIN = "https://pro-api.coinmarketcap.com";
+const MAX_CANDIDATES = 8;
 
 type MapItem = { id: number; name: string; symbol: string; slug?: string; rank?: number };
 type MapResponse = { data?: MapItem[] };
@@ -9,7 +12,7 @@ type QuoteResponse = { data?: QuoteItem[] };
 
 export const coinmarketcapAdapter: ProviderAdapter = {
   id: "coinmarketcap",
-  getOrigin: () => "https://pro-api.coinmarketcap.com",
+  getOrigin: () => ORIGIN,
   getRefreshWindow: () => 60000,
   async resolveAssets(input, context): Promise<ResolutionResult> {
     const query = input.trim();
@@ -24,17 +27,10 @@ export const coinmarketcapAdapter: ProviderAdapter = {
     const params = new URLSearchParams({ aux: "platform" });
     if (/^\d+$/.test(query)) params.set("id", query);
     else params.set("symbol", query.toUpperCase());
-    const response = await fetchJson<MapResponse>(`https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?${params.toString()}`, {
+    const response = await fetchJson<MapResponse>(`${ORIGIN}/v1/cryptocurrency/map?${params.toString()}`, {
       headers: { "X-CMC_PRO_API_KEY": context.key },
     });
-    const candidates = (response.data ?? []).slice(0, 8).map((coin) => ({
-      provider: "coinmarketcap" as const,
-      id: String(coin.id),
-      name: coin.name,
-      symbol: coin.symbol,
-      slug: coin.slug,
-      rank: coin.rank,
-    }));
+    const candidates = toCandidates(response.data);
     if (candidates.length === 0) return { input, status: "not-found", candidates: [], message: "No matching asset found. Use a CMC name, slug, symbol, or ID." };
     if (candidates.length === 1) return { input, status: "confirmed", candidates };
     return { input, status: "ambiguous", candidates, message: "This symbol maps to more than one asset. Choose one." };
@@ -47,7 +43,7 @@ export const coinmarketcapAdapter: ProviderAdapter = {
     // price and market_cap from aux defaults, percent_change_24h and last_updated
     // from the quote object itself.
     const params = new URLSearchParams({ id: ids.join(","), convert: "USD" });
-    const response = await fetchJson<QuoteResponse>(`https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest?${params.toString()}`, {
+    const response = await fetchJson<QuoteResponse>(`${ORIGIN}/v3/cryptocurrency/quotes/latest?${params.toString()}`, {
       headers: { "X-CMC_PRO_API_KEY": context.key },
     });
     return (response.data ?? []).flatMap((coin) => {
@@ -75,19 +71,27 @@ function looksLikeNameOrSlug(value: string): boolean {
   return value.includes(" ") || value.includes("-") || (/[a-z]/.test(value) && value.length > 4);
 }
 
-async function resolveSlug(input: string, context: ProviderContext): Promise<ResolutionResult> {
-  const slug = input.trim().toLowerCase().replace(/\s+/g, "-");
-  const params = new URLSearchParams({ slug, convert: "USD" });
-  const response = await fetchJson<QuoteResponse>(`https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest?${params.toString()}`, {
-    headers: { "X-CMC_PRO_API_KEY": context.key },
-  });
-  const candidates = (response.data ?? []).slice(0, 8).map((coin) => ({
+// Both CoinMarketCap endpoints return the same identifying fields, so both build a
+// candidate the same way. Quote items carry no rank, which leaves `rank` undefined
+// exactly as it was before.
+function toCandidates(items: Array<MapItem | QuoteItem> | undefined): ResolutionCandidate[] {
+  return (items ?? []).slice(0, MAX_CANDIDATES).map((coin) => ({
     provider: "coinmarketcap" as const,
     id: String(coin.id),
     name: coin.name,
     symbol: coin.symbol,
     slug: coin.slug,
+    rank: "rank" in coin ? coin.rank : undefined,
   }));
+}
+
+async function resolveSlug(input: string, context: ProviderContext): Promise<ResolutionResult> {
+  const slug = input.trim().toLowerCase().replace(/\s+/g, "-");
+  const params = new URLSearchParams({ slug, convert: "USD" });
+  const response = await fetchJson<QuoteResponse>(`${ORIGIN}/v3/cryptocurrency/quotes/latest?${params.toString()}`, {
+    headers: { "X-CMC_PRO_API_KEY": context.key },
+  });
+  const candidates = toCandidates(response.data);
   if (candidates.length === 0) return { input, status: "not-found", candidates: [], message: "No matching asset found." };
   return candidates.length === 1
     ? { input, status: "confirmed", candidates }

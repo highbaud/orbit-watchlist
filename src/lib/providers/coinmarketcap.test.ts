@@ -56,6 +56,25 @@ describe("CoinMarketCap adapter", () => {
     for (const [url] of calls) assertAuxIsAccepted(url);
   });
 
+  it("builds the exact request URL for each lookup path", async () => {
+    const fetchMock = vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+      data: [{ id: 1, name: "Bitcoin", symbol: "BTC", slug: "bitcoin", rank: 1, quote: { USD: { price: 65000 } } }],
+    }), { status: 200 })));
+    vi.stubGlobal("fetch", fetchMock);
+    const context = { key: "cmc-key" };
+    await coinmarketcapAdapter.getQuotes(["1", "1027"], context);
+    await coinmarketcapAdapter.resolveAssets("bitcoin", context);
+    await coinmarketcapAdapter.resolveAssets("BTC", context);
+    await coinmarketcapAdapter.resolveAssets("1", context);
+    const urls = (fetchMock.mock.calls as unknown as Array<[string, RequestInit?]>).map(([url]) => url);
+    expect(urls).toEqual([
+      "https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest?id=1%2C1027&convert=USD",
+      "https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest?slug=bitcoin&convert=USD",
+      "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?aux=platform&symbol=BTC",
+      "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?aux=platform&id=1",
+    ]);
+  });
+
   it("reads the map rank that arrives without an aux value", async () => {
     const fetchMock = vi.fn(() => Promise.resolve(new Response(JSON.stringify({
       data: [{ id: 1, name: "Bitcoin", symbol: "BTC", slug: "bitcoin", rank: 1, platform: null }],
