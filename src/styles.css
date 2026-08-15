@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  font-family: "Geist", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  color: #f5f7f5;
+  background: #101412;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  --orbit-bg: #101412;
+  --orbit-panel: #151b18;
+  --orbit-panel-raised: #1b231f;
+  --orbit-panel-soft: #202a25;
+  --orbit-text: #f5f7f5;
+  --orbit-muted: #98a69e;
+  --orbit-dim: #66736b;
+  --orbit-line: rgba(213, 236, 221, 0.12);
+  --orbit-accent: #a8f0c4;
+  --orbit-accent-strong: #72d99b;
+  --orbit-positive: #9ee7a5;
+  --orbit-negative: #ff9e9e;
+  --orbit-warning: #f6d98a;
+  --orbit-radius: 14px;
+  --destructive-foreground: var(--color-red-800);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-900);
+  --info: var(--color-violet-500);
+  --info-foreground: var(--color-violet-900);
+  --warning: var(--color-yellow-500);
+  --warning-foreground: var(--color-yellow-900);
+  --invert: var(--color-zinc-900);
+  --invert-foreground: var(--color-zinc-50);
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-theme="system"] {
+    color: #172019;
+    background: #f2f5f1;
+    --orbit-bg: #f2f5f1;
+    --orbit-panel: #ffffff;
+    --orbit-panel-raised: #f8fbf8;
+    --orbit-panel-soft: #e8eee9;
+    --orbit-text: #172019;
+    --orbit-muted: #607066;
+    --orbit-dim: #84938a;
+    --orbit-line: rgba(23, 32, 25, 0.12);
+    --orbit-accent: #11723f;
+    --orbit-accent-strong: #0b5a31;
+    --orbit-positive: #18763a;
+    --orbit-negative: #bd3d3d;
+    --orbit-warning: #956c12;
+  }
+}
+
+:root[data-theme="light"] {
+  color: #172019;
+  background: #f2f5f1;
+  --orbit-bg: #f2f5f1;
+  --orbit-panel: #ffffff;
+  --orbit-panel-raised: #f8fbf8;
+  --orbit-panel-soft: #e8eee9;
+  --orbit-text: #172019;
+  --orbit-muted: #607066;
+  --orbit-dim: #84938a;
+  --orbit-line: rgba(23, 32, 25, 0.12);
+  --orbit-accent: #11723f;
+  --orbit-accent-strong: #0b5a31;
+  --orbit-positive: #18763a;
+  --orbit-negative: #bd3d3d;
+  --orbit-warning: #956c12;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; background: var(--orbit-bg); color: var(--orbit-text); }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: 0.5; }
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible {
+  outline: 2px solid var(--orbit-accent-strong);
+  outline-offset: 2px;
+}
+
+.orbit-shell { min-height: 100dvh; background: var(--orbit-bg); }
+.orbit-popup { width: 392px; }
+.orbit-panel { width: 100%; min-height: 100dvh; }
+.orbit-container { padding: 16px; }
+.orbit-card { border: 1px solid var(--orbit-line); border-radius: var(--orbit-radius); background: var(--orbit-panel); }
+.orbit-card-raised { border: 1px solid var(--orbit-line); border-radius: var(--orbit-radius); background: var(--orbit-panel-raised); }
+.orbit-muted { color: var(--orbit-muted); }
+.orbit-dim { color: var(--orbit-dim); }
+.orbit-eyebrow { color: var(--orbit-accent); font-size: 10px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; }
+.orbit-number { font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.orbit-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--orbit-panel-soft) transparent; }
+.orbit-divider { border-top: 1px solid var(--orbit-line); }
+.orbit-icon-button { display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 10px; background: transparent; color: var(--orbit-muted); transition: background 160ms ease, color 160ms ease, transform 160ms ease; }
+.orbit-icon-button:hover { background: var(--orbit-panel-soft); color: var(--orbit-text); }
+.orbit-icon-button:active { transform: scale(0.97); }
+.orbit-primary-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--orbit-accent-strong); border-radius: 10px; background: var(--orbit-accent); color: #102116; font-weight: 700; transition: transform 160ms ease, filter 160ms ease; }
+.orbit-primary-button:hover { filter: brightness(1.05); }
+.orbit-primary-button:active { transform: translateY(1px) scale(0.98); }
+.orbit-secondary-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--orbit-line); border-radius: 10px; background: var(--orbit-panel-raised); color: var(--orbit-text); font-weight: 650; }
+.orbit-secondary-button:hover { background: var(--orbit-panel-soft); }
+.orbit-input { width: 100%; border: 1px solid var(--orbit-line); border-radius: 10px; background: var(--orbit-panel-raised); color: var(--orbit-text); padding: 10px 12px; }
+.orbit-input::placeholder { color: var(--orbit-dim); }
+.orbit-label { display: block; margin-bottom: 6px; color: var(--orbit-muted); font-size: 12px; font-weight: 650; }
+.orbit-empty { border: 1px dashed var(--orbit-line); border-radius: var(--orbit-radius); background: color-mix(in srgb, var(--orbit-panel) 86%, transparent); }
+.orbit-skeleton { border-radius: 8px; background: linear-gradient(90deg, var(--orbit-panel-raised), var(--orbit-panel-soft), var(--orbit-panel-raised)); background-size: 200% 100%; animation: orbit-shimmer 1.4s ease-in-out infinite; }
+@keyframes orbit-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) { .orbit-skeleton { animation: none; } * { scroll-behavior: auto !important; } }
+
+.dark {
+  --destructive-foreground: var(--color-red-600);
+  --success: var(--color-emerald-500);
+  --success-foreground: var(--color-emerald-600);
+  --info: var(--color-violet-500);
+  --info-foreground: var(--color-violet-600);
+  --warning: var(--color-yellow-500);
+  --warning-foreground: var(--color-yellow-600);
+  --invert: var(--color-zinc-700);
+  --invert-foreground: var(--color-zinc-50);
+}
+
+@theme inline {
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-invert: var(--invert);
+  --color-invert-foreground: var(--invert-foreground);
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orbit Watchlist privacy policy</title>
+  <style>
+    :root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #101512; color: #f4f7f1; }
+    body { margin: 0; padding: 48px 20px; }
+    main { max-width: 720px; margin: 0 auto; }
+    h1 { letter-spacing: -.04em; }
+    h2 { margin-top: 32px; font-size: 1.1rem; }
+    p, li { color: #b5c1b8; line-height: 1.7; }
+    a { color: #9fe870; }
+    code { color: #d8f4c7; }
+  </style>
+</head>
+<body>
+  <main>
+    <p><strong>Orbit Watchlist</strong></p>
+    <h1>Privacy policy</h1>
+    <p>Effective date: 2026-08-15</p>
+    <p>Orbit Watchlist is a Chrome extension for local crypto watchlists. It does not collect, sell, or share personal data.</p>
+
+    <h2>Data Orbit handles</h2>
+    <p>Orbit handles provider API keys, watchlist names, provider asset IDs, cached market quotes, refresh times, and display settings only when you choose to provide or create them.</p>
+    <p>Watchlists and quote caches stay in Chrome extension storage. API keys stay in the browser session. If you turn on <em>Remember this key</em>, Orbit encrypts provider keys with AES-256-GCM using a passphrase-derived key before storing the ciphertext locally. Orbit does not store the passphrase.</p>
+
+    <h2>Network requests</h2>
+    <p>While the popup or side panel is open, Orbit can send requests to the provider you selected: CoinGecko Demo or Pro API, or CoinMarketCap Pro API. Requests use the API key you supplied. Orbit does not send your key to an Orbit server, and Orbit has no Orbit server.</p>
+    <p>Orbit does not make market-data requests while the popup and side panel are closed. It does not run background polling.</p>
+
+    <h2>Permissions</h2>
+    <ul>
+      <li><code>storage</code> saves local settings, watchlists, quote cache, encrypted vault ciphertext, and session-only unlocked keys.</li>
+      <li><code>sidePanel</code> opens the full watchlist manager after your click.</li>
+      <li>Optional provider host permissions allow requests only to the provider API you connect.</li>
+    </ul>
+    <p>Orbit does not use content scripts, browsing history, page content, tabs access, ads, analytics, tracking pixels, or cloud sync.</p>
+
+    <h2>Your choices</h2>
+    <p>You can remove watchlists, clear cached quotes, lock keys, or reset the vault from Settings. Uninstalling the extension removes its Chrome extension storage according to Chrome storage behavior.</p>
+
+    <h2>Contact</h2>
+    <p>Add a real support email or project URL here before Chrome Web Store submission.</p>
+  </main>
+</body>
+</html>

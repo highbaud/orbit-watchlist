@@ -1,0 +1,6 @@
+# Normalize to LF in the repository so Windows checkouts do not create whole-file
+# diffs that hide the real change.
+* text=auto eol=lf
+
+*.png binary
+*.zip binary

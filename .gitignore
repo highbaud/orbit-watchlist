@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Build output. `npm run build` regenerates dist/ and the PNG icons in public/.
+dist/
+public/icon-16.png
+public/icon-32.png
+public/icon-48.png
+public/icon-128.png
+
+# TypeScript incremental build cache
+*.tsbuildinfo
+
+# Provider keys and local secrets. Orbit keeps real keys in Chrome storage only,
+# and no key belongs in this repo under any circumstances.
+.env
+.env.*
+*.key
+*.pem
+
+# Editor and OS noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

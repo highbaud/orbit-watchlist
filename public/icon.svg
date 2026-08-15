@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Orbit Watchlist">
+  <rect width="128" height="128" rx="30" fill="#102116"/>
+  <circle cx="64" cy="64" r="32" fill="none" stroke="#9FE870" stroke-width="10"/>
+  <circle cx="64" cy="64" r="10" fill="#F4F7F1"/>
+  <path d="M94 34 108 20M96 20h12v12" fill="none" stroke="#9FE870" stroke-linecap="round" stroke-linejoin="round" stroke-width="7"/>
+</svg>
