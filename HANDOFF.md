@@ -163,12 +163,30 @@ refusals in section 15 and the new release gates in section 18. Nothing is built
 Reasoning behind every accepted and rejected feature, with the evidence and its quality:
 the 2026-08-16 feature audit, held in the private workspace notes
 
+## Closed on 2026-08-16
+
+- **Support contact.** `info@empyrus.net` is in the privacy page, the policy, the public
+  site, and the built `dist`. The placeholder is gone from the repository.
+- **Public privacy policy URL.** <https://highbaud.github.io/orbit-watchlist/privacy.html>,
+  live and returning 200. This was the last hard blocker on store submission paperwork.
+- **Repository is public.** Flipped after a full-history secret scan across all commits
+  found no keys, no `.env`, and no credential files.
+- **Public site.** `docs/` is served by GitHub Pages at
+  <https://highbaud.github.io/orbit-watchlist/>. It carries schema.org structured data
+  (SoftwareApplication, Person, WebSite) with Max Avery as author, verified live. It states
+  that the extension is unpublished and lists only features that exist today.
+
 ## Known limits before release
 
-- Live provider calls and full Chrome manual QA still need a real provider key.
-- The privacy page still has a support placeholder. Replace it with a real support email or project URL.
-- The privacy policy needs a public URL before Chrome Web Store submission.
+- **Chrome Web Store developer account does not exist yet.** Owner action, because
+  registration needs payment details. Do this early, verification can take time.
 - Store screenshots and final store artwork still need to be created.
+- Live provider QA is deferred by decision to a single pass after release 2, run by the
+  owner with their own key. Claude never handles a provider key.
+- The DAG wording is deliberately unfinished until the site and its structured data settle.
+  DAG appears in prose on the site and is intentionally absent from the structured data.
+- Compliance sign-off is the owner's, after Claude runs `ria-compliance-review`. The formal
+  gate in roadmap section 18 stays open until a person with authority signs it.
 - There are unit and adapter tests, but no automated Chrome UI or end-to-end test suite yet.
 - The extension has not been published to the Chrome Web Store.
 
