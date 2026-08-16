@@ -12,6 +12,30 @@ Short version of the rules that must not be broken:
 - Preserve the local-only product direction.
 - Run `npm run typecheck`, `npm test`, and `npm run build` after code changes.
 
+## Standing refusals
+
+Permanent product rules, decided 2026-08-16 and recorded in roadmap section 15. These are
+not backlog items. Do not implement any of them, and do not treat a user request that
+implies one as approval to reopen it. Say that it is a standing refusal and ask.
+
+- **No wallet connection**, seed phrase, private key, or transaction signing.
+- **No wallet addresses**, including watch-only.
+- **No exchange API keys**, including keys marked read-only.
+- **No `chrome.storage.sync`**, for anything, ever.
+- **No analytics, click tracking, or lead capture**, for DAG or anyone else.
+- **No sending holdings anywhere**, including to a provider, to DAG, or to a crash reporter.
+
+The property these protect: Orbit holds nothing that can authorize moving funds, so the
+worst case of a full compromise is disclosure of self-entered numbers, never loss of assets.
+Any change that weakens that property is the one change this project cannot make.
+
+## Two invariants worth a test, not a comment
+
+- Exactly one `fetch` exists in the codebase, in `fetchJson`. Keep it that way. It is what
+  makes "holdings never leave the machine" provable instead of merely claimed.
+- Holdings are encrypted at rest under the existing passphrase vault. `chrome.storage.local`
+  is not encrypted by the browser.
+
 ## Provider request parameters
 
 CoinMarketCap validates `aux` against a per-endpoint allowed list and answers HTTP 400

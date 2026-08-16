@@ -1,7 +1,8 @@
 # Orbit Watchlist build roadmap
 
-Date: 2026-08-15  
-Status: roadmap complete, MVP build present in `dist`
+Date: 2026-08-15, release 2 added 2026-08-16  
+Status: release 1 built and green, never run against a real provider key. Release 2 scope
+accepted and specified in sections 14 to 19, not started.
 
 ## 1. Product contract
 
@@ -523,3 +524,222 @@ Do not publish until all gates pass:
 3. Replace the support placeholder in the local privacy page.
 4. Capture store screenshots and confirm the final listing text.
 5. Submit only after Chrome permissions, privacy, and data handling review passes.
+
+---
+
+# Release 2
+
+Added 2026-08-16 from the feature audit. The audit rated 52 candidate features against
+three grounded research passes, the live provider APIs, the current Chrome Web Store
+policy, and this codebase. Full report and the reasoning behind every accepted and
+rejected feature:
+<https://claude.ai/code/artifact/6bb466cb-c480-44d2-9322-55d10ac6356c>
+
+Everything below marked "Build now" in that audit is accepted scope. Items marked Next and
+Later are recorded in section 19 as the backlog and are not part of release 2.
+
+## 14. Release 2 contract
+
+Release 1 is a price watchlist. Release 2 makes it a private portfolio view and gives the
+privacy claim something a skeptic can check.
+
+Release 2 must let a user:
+
+- see prices immediately after install, with no API key, and add a key later only to lift
+  the rate limit;
+- type how much of each asset they hold, with no wallet, no address, and no exchange key;
+- see total portfolio value, per-token value, and each token's share of the whole;
+- hide every number on screen with one action;
+- keep holdings encrypted at rest under the passphrase that already protects the API key;
+- restore an older install's data without loss when the storage shape changes;
+- see who built the tool and read a plain statement that it gives no advice.
+
+Release 2 still does not include alerts, notifications, charts, news, page overlays,
+analytics, accounts, or cloud sync.
+
+### Single purpose changes, and this is a gate not a note
+
+Chrome's Web Store policy, enforced from 1 August 2026, requires that any user data an
+extension collects be strictly necessary to its **disclosed single purpose**, and that all
+collection be prominently disclosed
+(<https://developer.chrome.com/blog/cws-policy-updates-2026>).
+
+Holdings are user data. The store listing's single purpose currently describes a price
+watchlist. It must be rewritten to include portfolio tracking, and the privacy page must
+describe holdings storage, **before** the holdings feature ships. Shipping the feature
+against the old listing is itself the violation.
+
+## 15. Standing refusals
+
+These are permanent product rules, not a backlog. Any future proposal that needs one of
+them is refused by default, and reopening one is an explicit owner decision.
+
+- **No wallet connection**, no seed phrase, no private key, no transaction signing.
+- **No wallet addresses**, including watch-only ones. They link a person to an on-chain
+  identity and start a slide toward address handling.
+- **No exchange API keys**, including keys marked read-only. They still expose balances and
+  are regularly issued with wider rights than intended.
+- **No `chrome.storage.sync` for anything.** Sync sends data to Google servers. Holdings,
+  keys, and vault material are local-only, permanently.
+- **No analytics, click tracking, or lead capture**, for DAG or anyone else. This is both
+  the Chrome single-purpose rule and the thing that makes the privacy claim true.
+- **No sending holdings anywhere.** Not to a provider, not to DAG, not to a crash reporter.
+
+The point of these rules is a property, not a preference: Orbit holds nothing that can
+authorize moving funds, so the worst outcome of a total compromise is disclosure of numbers
+the user typed in, never loss of holdings.
+
+## 16. Release 2 data model
+
+### Holdings
+
+A holding belongs to an asset inside a list, so a watchlist doubles as a portfolio and no
+second organizing concept is introduced. A holding records the amount held and, optionally,
+an average acquisition price. It does not record transactions; tax-lot tracking is
+explicitly out of scope and is a different product.
+
+Amounts are stored as strings and computed with integer or decimal-safe arithmetic. Token
+amounts run to eighteen decimal places, and IEEE floating point silently produces wrong
+totals at that precision. This is a correctness requirement, not a preference.
+
+### Schema version 2
+
+`AppState.schemaVersion` moves to 2. `normalizeState` currently hard-returns `1` and never
+reads the stored value, so there is no migration path at all. A versioned migration step is
+required **before** any holdings field is added, because the moment the shape changes,
+existing installs hold v1 data that the new code will misread.
+
+### Pricing identity
+
+A holding may only be priced through a resolved provider ID. A holding matched by ticker
+alone must not be priced. CoinMarketCap returns thirteen distinct assets for the symbol
+`BTC`, so a symbol is not an identity and a wrong match here misstates someone's net worth.
+
+### Export
+
+Export excludes holdings by default. Including them is an explicit user choice, and when
+included the file is encrypted. Today `exportLists` writes `state.lists` wholesale, so
+attaching holdings to an asset without changing export would put plaintext holdings into
+every backup file.
+
+## 17. Release 2 build phases
+
+### Phase 9: repair what release 1 shipped broken
+
+Work:
+
+- wire the theme setting to the document, so the existing light palette can activate. A
+  complete light theme is already written in `styles.css` behind `:root[data-theme=...]`
+  and nothing in `src/` ever sets that attribute, so Orbit is currently dark for everyone,
+  including users whose system asks for light;
+- add a versioned schema migration step to `normalizeState` that reads the stored version
+  and upgrades forward;
+- add retry and backoff to the provider layer. There is none today, so one rate-limit
+  response becomes a hard error, and free tiers rate-limit exactly when markets move.
+  Backoff parameters derive from each provider's documented rate limit, not from a guess.
+
+Exit gate: light, dark, and system themes all render; a stored v1 state loads and upgrades
+without loss under test; a simulated 429 recovers without surfacing an error.
+
+### Phase 10: zero-key first run
+
+Work:
+
+- allow CoinGecko calls with no API key, using the public tier;
+- make the key an optional upgrade for rate limit, not a gate before the first price;
+- keep the key disclosure and consent flow exactly as it is for anyone who does add a key;
+- set the refresh window from whichever tier is actually in use.
+
+Exit gate: a fresh install shows real prices before any key is entered, and adding a key
+afterward changes only the refresh window.
+
+Note: verified on 2026-08-16 that CoinGecko answers 200 without a key on `/simple/price`,
+`/coins/{id}/market_chart`, and `/coins/markets?sparkline=true`.
+
+### Phase 11: holdings foundation
+
+Work:
+
+- add the holding shape and the schema version 2 migration;
+- move app state behind the existing passphrase vault so holdings are encrypted at rest.
+  Today state is plaintext in `chrome.storage.local`, which the browser does not encrypt;
+- add decimal-safe arithmetic for amounts and values;
+- refuse to price a holding that has no resolved provider ID;
+- add the outbound-payload test described in section 18.
+
+Exit gate: holdings round-trip through lock and unlock; a v1 install upgrades cleanly; the
+outbound-payload test passes; totals are correct at eighteen decimal places.
+
+### Phase 12: portfolio surface
+
+Work:
+
+- manual amount entry and inline editing on each asset in a list;
+- total portfolio value, per-token value, and per-token share of the whole;
+- a one-action hide for every number on screen, plus a hidden-by-default setting;
+- clear treatment for an asset that has no price, so it never silently counts as zero;
+- sparklines in the row, from the same call that already fetches prices;
+- export changes from section 16.
+
+Exit gate: values are correct against a hand-worked example; hide leaves no number visible
+in either surface; an unpriced asset is labeled rather than counted.
+
+### Phase 13: attribution and disclosure
+
+Work:
+
+- a standing, plainly worded statement that Orbit displays the user's own figures and gives
+  no advice;
+- a static "by DAG Wealth" credit and a plain link, with no tracking parameters and no
+  redirect;
+- an About panel carrying the adviser disclosures;
+- rewritten store listing and privacy page covering portfolio tracking and holdings storage.
+
+Exit gate: the copy has been through the `ria-compliance-review` skill, the entity is named
+DAG Wealth with no retired brand names, the listing's single purpose covers holdings, and
+counsel has seen the plan. No precedent exists for an RIA promoting through a browser
+extension, so counsel review happens before submission, not after.
+
+### Phase 14: release 2 verification
+
+Work:
+
+- full manual QA with a real provider key, including CoinMarketCap, which has never been
+  exercised against one;
+- upgrade testing from a release 1 install with existing lists;
+- accessibility pass on the price and value colors, which is the most common contrast
+  failure in financial UI;
+- store resubmission.
+
+Exit gate: section 18 gates all pass.
+
+## 18. Release 2 release gates
+
+All release 1 gates in section 12 continue to apply. In addition:
+
+- no holdings value appears in any outbound request URL, header, or body. The whole
+  codebase has exactly one `fetch`, in `fetchJson`, which makes this provable rather than
+  asserted. An automated test asserts it;
+- nothing anywhere writes to `chrome.storage.sync`, asserted by test;
+- holdings are unreadable in `chrome.storage.local` while the vault is locked;
+- a default export contains no holdings;
+- a stored v1 state upgrades to v2 with no data loss;
+- portfolio totals match a hand-worked example at eighteen decimal places;
+- no holding can be priced without a resolved provider ID;
+- the store listing's stated single purpose covers portfolio tracking, and the privacy page
+  describes holdings storage;
+- the DAG copy has passed compliance review and carries the not-advice statement.
+
+## 19. Backlog, not release 2
+
+Rated worth building, deliberately deferred: toolbar badge price, multi-currency display
+(62 fiat currencies confirmed available), keyboard shortcut to open the panel, allocation
+chart, auto-lock on idle, encrypted export and import, quick-add and inline edit
+refinements, average cost basis, CSV import of holdings, open-sourcing the extension,
+an About DAG panel, price charts, dense mode, tags and grouping, omnibox lookup,
+stablecoin and cash lines, transaction ledger with tax lots.
+
+Rated and rejected, with reasons in the audit: Fear and Greed index, trending coins, new tab
+takeover, ticker bar, floating overlay, NFT and whale tracking, provider fallback,
+liquidity-aware value, portfolio-triggered advisor calls to action, lead capture, click
+tracking. The last four are refusals under section 15, not deferrals.

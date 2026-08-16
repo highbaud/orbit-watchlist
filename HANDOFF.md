@@ -136,6 +136,33 @@ Still open and unchanged: everything under Known limits below.
 - The final manifest has only `storage` and `sidePanel` required permissions plus optional provider origins.
 - Static scans found no `console` logging, browser prompts, content scripts, history access, tabs access, alarms, or service-worker polling.
 
+## Open defects, found 2026-08-16
+
+These came from reading this codebase against the feature audit. None is fixed. All three
+are scheduled as Phase 9 in the roadmap, and two of them block the holdings feature.
+
+1. **The light theme can never activate.** `src/styles.css` carries a complete light palette
+   behind `:root[data-theme="light"]` and `:root[data-theme="system"]`, and nothing in
+   `src/` ever sets that attribute. There is no `setAttribute`, no `documentElement`, and no
+   `classList` anywhere. The `theme` setting is stored and included in backups, and does
+   nothing. Orbit is dark for everyone, including users whose system asks for light.
+2. **There is no schema migration path.** `normalizeState` hard-returns `schemaVersion: 1`
+   and never reads the stored value. Harmless today because only one shape has existed.
+   Adding holdings changes the shape, and existing installs would then hold v1 data that the
+   new code misreads. Build the migration first.
+3. **There is no retry or backoff.** Nothing in `src/lib/` retries or backs off. A single 429
+   or dropped connection becomes a hard error state, and free API tiers rate-limit exactly
+   when markets move and everyone refreshes at once.
+
+## Release 2 scope, accepted 2026-08-16
+
+Portfolio tracking by manual entry, zero-key first run, and the trust work that makes the
+privacy claim checkable. Specified in roadmap sections 14 to 19, including the standing
+refusals in section 15 and the new release gates in section 18. Nothing is built yet.
+
+Reasoning behind every accepted and rejected feature, with the evidence and its quality:
+<https://claude.ai/code/artifact/6bb466cb-c480-44d2-9322-55d10ac6356c>
+
 ## Known limits before release
 
 - Live provider calls and full Chrome manual QA still need a real provider key.
