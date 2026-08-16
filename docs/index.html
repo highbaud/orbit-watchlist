@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit Watchlist</title>
+<meta name="description" content="A Chrome extension for private crypto watchlists. No wallet connection, no accounts, no servers. Built by Max Avery.">
+<link rel="canonical" href="https://highbaud.github.io/orbit-watchlist/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Orbit Watchlist">
+<meta property="og:description" content="A Chrome extension for private crypto watchlists. No wallet connection, no accounts, no servers.">
+<meta property="og:url" content="https://highbaud.github.io/orbit-watchlist/">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://highbaud.github.io/orbit-watchlist/#app",
+      "name": "Orbit Watchlist",
+      "applicationCategory": "BrowserApplication",
+      "applicationSubCategory": "Chrome Extension",
+      "operatingSystem": "Chrome 116 and later",
+      "description": "A Manifest V3 Chrome extension for private crypto watchlists. Prices come from the user's own CoinGecko or CoinMarketCap key. It never connects a wallet, holds no private keys, and sends no data to any server operated by the developer.",
+      "url": "https://highbaud.github.io/orbit-watchlist/",
+      "softwareVersion": "0.1.0",
+      "isAccessibleForFree": true,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "author": { "@id": "https://highbaud.github.io/orbit-watchlist/#max-avery" },
+      "maintainer": { "@id": "https://highbaud.github.io/orbit-watchlist/#max-avery" },
+      "codeRepository": "https://github.com/highbaud/orbit-watchlist",
+      "programmingLanguage": "TypeScript",
+      "privacyPolicy": "https://highbaud.github.io/orbit-watchlist/privacy.html",
+      "featureList": [
+        "Multiple named crypto watchlists",
+        "Prices, market cap and 24 hour change in USD",
+        "Toolbar popup and a Chrome side panel",
+        "Bring your own CoinGecko or CoinMarketCap API key",
+        "API keys encrypted with AES-256-GCM behind a passphrase",
+        "Bulk paste import with ambiguous symbol resolution",
+        "Local JSON export and import"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://highbaud.github.io/orbit-watchlist/#max-avery",
+      "name": "Max Avery",
+      "url": "https://maxavery.org/",
+      "jobTitle": "Writer and builder",
+      "knowsAbout": ["Digital assets", "Blockchain", "Financial technology", "Software development"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://highbaud.github.io/orbit-watchlist/#website",
+      "url": "https://highbaud.github.io/orbit-watchlist/",
+      "name": "Orbit Watchlist",
+      "publisher": { "@id": "https://highbaud.github.io/orbit-watchlist/#max-avery" },
+      "about": { "@id": "https://highbaud.github.io/orbit-watchlist/#app" }
+    }
+  ]
+}
+</script>
+<style>
+  :root {
+    --bg: #f2f5f1;
+    --panel: #ffffff;
+    --soft: #e8eee9;
+    --text: #172019;
+    --muted: #55655c;
+    --dim: #7a8a80;
+    --line: rgba(23, 32, 25, 0.14);
+    --accent: #11723f;
+    --accent-ink: #0b5a31;
+    --warn: #8a5f12;
+    --mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", SFMono-Regular, Consolas, monospace;
+    --sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101512;
+      --panel: #171d19;
+      --soft: #1e2620;
+      --text: #f4f7f1;
+      --muted: #b5c1b8;
+      --dim: #82918a;
+      --line: rgba(244, 247, 241, 0.14);
+      --accent: #9fe870;
+      --accent-ink: #b6f18d;
+      --warn: #e0b955;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; padding: 56px 22px 88px; display: flex; flex-direction: column; gap: 46px; }
+  header { display: flex; flex-direction: column; gap: 16px; }
+  .lockup { display: flex; align-items: center; gap: 11px; }
+  .mark {
+    width: 34px; height: 34px; border-radius: 11px;
+    background: var(--accent);
+    display: grid; place-items: center;
+    color: var(--bg); font-weight: 700; font-family: var(--mono); font-size: 15px;
+  }
+  .lockup span { font-weight: 650; letter-spacing: -0.01em; font-size: 18px; }
+  h1 { font-size: clamp(30px, 6vw, 44px); line-height: 1.1; letter-spacing: -0.03em; margin: 12px 0 0; text-wrap: balance; }
+  .lede { font-size: 19px; color: var(--muted); margin: 0; max-width: 60ch; }
+  .status {
+    display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--warn); border: 1px solid currentColor; padding: 5px 10px; border-radius: 999px;
+  }
+  h2 { font-size: 22px; letter-spacing: -0.015em; margin: 0 0 4px; }
+  section { display: flex; flex-direction: column; gap: 14px; }
+  p { margin: 0; color: var(--muted); max-width: 66ch; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .card.flag { border-left: 4px solid var(--accent); }
+  ul { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 9px; color: var(--muted); }
+  li strong { color: var(--text); font-weight: 620; }
+  .never { display: grid; gap: 10px; }
+  .never div { display: flex; gap: 11px; align-items: baseline; }
+  .never b { font-family: var(--mono); font-size: 12px; color: var(--accent); letter-spacing: 0.05em; flex: none; }
+  a { color: var(--accent-ink); text-underline-offset: 3px; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+  code { font-family: var(--mono); font-size: 0.87em; background: var(--soft); padding: 1px 6px; border-radius: 5px; }
+  footer { border-top: 1px solid var(--line); padding-top: 22px; color: var(--dim); font-size: 14.5px; display: flex; flex-direction: column; gap: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="lockup"><div class="mark">O</div><span>Orbit</span></div>
+    <h1>A crypto watchlist that never asks for your wallet.</h1>
+    <p class="lede">Orbit Watchlist is a Chrome extension for checking prices and keeping lists. It runs on your machine, uses an API key you supply, and has no account, no server, and no way to touch your funds.</p>
+    <div class="status">In development, not yet published</div>
+  </header>
+
+  <section>
+    <h2>What it does today</h2>
+    <ul>
+      <li><strong>Named watchlists.</strong> Create, rename, reorder and switch between as many as you want. Each list is bound to one data provider so asset IDs never get mixed up.</li>
+      <li><strong>Prices where you work.</strong> A toolbar popup for a quick look, and a Chrome side panel for managing lists while you browse.</li>
+      <li><strong>Your own API key.</strong> CoinGecko Demo, CoinGecko Pro, or CoinMarketCap Pro. The key is checked with the provider before it is saved.</li>
+      <li><strong>Real key protection.</strong> Turn on Remember and the key is encrypted with AES-256-GCM using a passphrase-derived key. The passphrase is never stored.</li>
+      <li><strong>Honest data.</strong> Every quote shows its exact update time, and stale figures are labeled instead of being passed off as current.</li>
+      <li><strong>Bulk import that asks.</strong> Paste a list of coins and Orbit reports each line. When a ticker matches more than one asset it makes you choose rather than guessing.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What it will never do</h2>
+    <div class="card flag">
+      <div class="never">
+        <div><b>NEVER</b><span>Connect a wallet, read a seed phrase, hold a private key, or sign a transaction.</span></div>
+        <div><b>NEVER</b><span>Ask for a wallet address, including a watch-only one.</span></div>
+        <div><b>NEVER</b><span>Ask for an exchange API key, including one marked read-only.</span></div>
+        <div><b>NEVER</b><span>Use Chrome sync, analytics, tracking, or advertising.</span></div>
+        <div><b>NEVER</b><span>Send your data anywhere except the price provider you chose.</span></div>
+      </div>
+      <p>These are not settings. They are the architecture. Orbit holds nothing that can authorize moving funds, so even a total compromise of the extension cannot cost you an asset.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2>Why you can check this rather than trust it</h2>
+    <p>Every crypto tool claims to respect your privacy. Almost none let you verify it. Orbit's source is public, and the whole extension makes network requests through exactly one function, so anyone can read what leaves the machine in a few minutes.</p>
+    <p>The permission list is deliberately tiny: <code>storage</code>, <code>sidePanel</code>, and access to the one provider API you connect. Nothing else. A short permission list is also the thing that makes any future change obvious.</p>
+    <p><a href="https://github.com/highbaud/orbit-watchlist">Read the source on GitHub</a> &middot; <a href="privacy.html">Read the privacy policy</a></p>
+  </section>
+
+  <section>
+    <h2>Who made it</h2>
+    <p>Orbit Watchlist is built by <a href="https://maxavery.org/">Max Avery</a>, who writes about digital assets, illicit finance, and Web3 security. It grew out of wanting a price check that did not require handing an account or a wallet to anyone. Made with support from DAG.</p>
+  </section>
+
+  <footer>
+    <div>Questions, or something wrong on this page? <a href="mailto:info@empyrus.net">info@empyrus.net</a></div>
+    <div>Orbit Watchlist is a tool for displaying figures you enter and prices you request. It is not investment advice and gives no recommendation to buy, sell, or hold anything.</div>
+  </footer>
+
+</div>
+</body>
+</html>

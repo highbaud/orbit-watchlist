@@ -533,7 +533,7 @@ Added 2026-08-16 from the feature audit. The audit rated 52 candidate features a
 three grounded research passes, the live provider APIs, the current Chrome Web Store
 policy, and this codebase. Full report and the reasoning behind every accepted and
 rejected feature:
-<https://claude.ai/code/artifact/6bb466cb-c480-44d2-9322-55d10ac6356c>
+the 2026-08-16 feature audit, held in the private workspace notes
 
 Everything below marked "Build now" in that audit is accepted scope. Items marked Next and
 Later are recorded in section 19 as the backlog and are not part of release 2.
@@ -550,7 +550,8 @@ Release 2 must let a user:
 - type how much of each asset they hold, with no wallet, no address, and no exchange key;
 - see total portfolio value, per-token value, and each token's share of the whole;
 - hide every number on screen with one action;
-- keep holdings encrypted at rest under the passphrase that already protects the API key;
+- optionally require a passphrase for holdings, off by default, using the vault that already
+  protects the API key;
 - restore an older install's data without loss when the storage shape changes;
 - see who built the tool and read a plain statement that it gives no advice.
 
@@ -597,6 +598,23 @@ A holding belongs to an asset inside a list, so a watchlist doubles as a portfol
 second organizing concept is introduced. A holding records the amount held and, optionally,
 an average acquisition price. It does not record transactions; tax-lot tracking is
 explicitly out of scope and is a different product.
+
+### Holdings protection, owner decision 2026-08-16
+
+Requiring a passphrase for holdings is a **setting, off by default**. The owner chose
+friction-free entry over encryption-by-default, with these consequences accepted:
+
+- with the setting off, holdings are stored unencrypted in `chrome.storage.local`, which the
+  browser does not encrypt. Anyone with the profile folder or the unlocked machine can read
+  them. This must be stated plainly on the privacy page and in the store data disclosure,
+  because Chrome now requires prominent disclosure of what is collected and how it is held;
+- with the setting on, holdings go into the existing vault and follow the same lock, unlock,
+  and reset lifecycle as the API key;
+- turning the setting on must warn, before it takes effect, that a forgotten passphrase can
+  only be resolved by a vault reset, and that **a reset clears all entered holdings to zero**.
+  The warning is part of the flow, not a tooltip;
+- holdings are self-entered and re-enterable, which is why this trade is reasonable. Offer an
+  export at the moment protection is switched on, so a reset is recoverable.
 
 Amounts are stored as strings and computed with integer or decimal-safe arithmetic. Token
 amounts run to eighteen decimal places, and IEEE floating point silently produces wrong
@@ -721,7 +739,10 @@ All release 1 gates in section 12 continue to apply. In addition:
   codebase has exactly one `fetch`, in `fetchJson`, which makes this provable rather than
   asserted. An automated test asserts it;
 - nothing anywhere writes to `chrome.storage.sync`, asserted by test;
-- holdings are unreadable in `chrome.storage.local` while the vault is locked;
+- with holdings protection on, holdings are unreadable in `chrome.storage.local` while the
+  vault is locked, and a vault reset clears them to zero after an explicit confirmation;
+- with holdings protection off, which is the default, the privacy page and the store data
+  disclosure both state plainly that holdings are stored unencrypted on the device;
 - a default export contains no holdings;
 - a stored v1 state upgrades to v2 with no data loss;
 - portfolio totals match a hand-worked example at eighteen decimal places;
@@ -730,7 +751,28 @@ All release 1 gates in section 12 continue to apply. In addition:
   describes holdings storage;
 - the DAG copy has passed compliance review and carries the not-advice statement.
 
-## 19. Backlog, not release 2
+## 19. Owner decisions, 2026-08-16
+
+Recorded so nobody has to guess later or reopen a settled question.
+
+| Question | Decision |
+|---|---|
+| Support contact | `info@empyrus.net`, now live in the privacy page, the policy, and the listing |
+| Repository | Public, after a full-history secret scan |
+| Privacy policy hosting | GitHub Pages off this repo |
+| Live QA | Deferred. One pass covering release 1 and release 2 together, run by the owner with their own key. Claude never handles the key |
+| Holdings protection | Optional setting, off by default. Reset clears holdings to zero, with a warning before the setting takes effect |
+| Attribution | Built by Max Avery, person first. DAG named second, short form "DAG" in the byline |
+| DAG placement | Byline plus an About panel. Not in the extension name. **Not final**: the web presence and schema markup come first |
+| Compliance sign-off | Owner, after Claude runs `ria-compliance-review` and hands over the report with a safe draft. The formal gate in section 18 stays open until a person with authority signs it |
+| Chrome Web Store account | Not yet registered. Owner action, since it needs payment details Claude will not handle |
+
+Two of these stay open on purpose. The store account has to be registered by a person, and
+the DAG wording is deliberately unfinished until the landing page and its structured data
+exist. Any disclosure line that names the registered adviser uses the full legal entity name,
+not the short form used in the byline.
+
+## 20. Backlog, not release 2
 
 Rated worth building, deliberately deferred: toolbar badge price, multi-currency display
 (62 fiat currencies confirmed available), keyboard shortcut to open the panel, allocation

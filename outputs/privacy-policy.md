@@ -42,4 +42,10 @@ You can remove watchlists, clear cached quotes, lock keys, or reset the vault fr
 
 ## Contact
 
-Publish a support email or project URL here before submitting the extension to the Chrome Web Store.
+Email info@empyrus.net with any question about this policy or the extension.
+
+Orbit Watchlist is built by Max Avery. The source is public at
+<https://github.com/highbaud/orbit-watchlist>, so every claim in this policy can be checked
+against the code.
+
+Published copy: <https://highbaud.github.io/orbit-watchlist/privacy.html>

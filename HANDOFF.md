@@ -161,7 +161,7 @@ privacy claim checkable. Specified in roadmap sections 14 to 19, including the s
 refusals in section 15 and the new release gates in section 18. Nothing is built yet.
 
 Reasoning behind every accepted and rejected feature, with the evidence and its quality:
-<https://claude.ai/code/artifact/6bb466cb-c480-44d2-9322-55d10ac6356c>
+the 2026-08-16 feature audit, held in the private workspace notes
 
 ## Known limits before release
 

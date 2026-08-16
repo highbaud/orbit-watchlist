@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy policy | Orbit Watchlist</title>
+<meta name="description" content="Orbit Watchlist privacy policy. The extension collects no personal data, uses no analytics, and sends requests only to the price provider you connect.">
+<link rel="canonical" href="https://highbaud.github.io/orbit-watchlist/privacy.html">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Orbit Watchlist privacy policy",
+  "url": "https://highbaud.github.io/orbit-watchlist/privacy.html",
+  "description": "Privacy policy for the Orbit Watchlist Chrome extension.",
+  "isPartOf": { "@type": "WebSite", "@id": "https://highbaud.github.io/orbit-watchlist/#website" },
+  "about": { "@type": "SoftwareApplication", "@id": "https://highbaud.github.io/orbit-watchlist/#app" },
+  "publisher": { "@type": "Person", "name": "Max Avery", "url": "https://maxavery.org/" },
+  "dateModified": "2026-08-16"
+}
+</script>
+<style>
+  :root {
+    --bg: #f2f5f1; --panel: #ffffff; --soft: #e8eee9;
+    --text: #172019; --muted: #55655c; --dim: #7a8a80;
+    --line: rgba(23, 32, 25, 0.14); --accent: #11723f; --accent-ink: #0b5a31;
+    --mono: ui-monospace, "Cascadia Mono", "Segoe UI Mono", SFMono-Regular, Consolas, monospace;
+    --sans: ui-sans-serif, system-ui, "Segoe UI", Roboto, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101512; --panel: #171d19; --soft: #1e2620;
+      --text: #f4f7f1; --muted: #b5c1b8; --dim: #82918a;
+      --line: rgba(244, 247, 241, 0.14); --accent: #9fe870; --accent-ink: #b6f18d;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 17px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 740px; margin: 0 auto; padding: 40px 22px 88px; }
+  .back { font-family: var(--mono); font-size: 13px; color: var(--accent-ink); text-decoration: none; }
+  .back:hover { text-decoration: underline; }
+  h1 { font-size: clamp(28px, 5vw, 38px); letter-spacing: -0.03em; margin: 24px 0 6px; }
+  h2 { font-size: 20px; letter-spacing: -0.015em; margin: 36px 0 8px; }
+  p, li { color: var(--muted); }
+  p { margin: 0 0 12px; max-width: 66ch; }
+  ul { padding-left: 22px; display: flex; flex-direction: column; gap: 8px; margin: 0 0 12px; }
+  .eff { font-family: var(--mono); font-size: 13px; color: var(--dim); }
+  a { color: var(--accent-ink); text-underline-offset: 3px; }
+  a:focus-visible, .back:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 3px; }
+  code { font-family: var(--mono); font-size: 0.87em; background: var(--soft); padding: 1px 6px; border-radius: 5px; }
+  .note { background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 18px 20px; margin: 20px 0; }
+  .note p:last-child { margin-bottom: 0; }
+  footer { border-top: 1px solid var(--line); margin-top: 44px; padding-top: 20px; color: var(--dim); font-size: 14.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="./">&larr; Orbit Watchlist</a>
+
+  <h1>Privacy policy</h1>
+  <p class="eff">Effective 15 August 2026. Last updated 16 August 2026.</p>
+
+  <p>Orbit Watchlist is a Chrome extension for local crypto watchlists. It does not collect, sell, or share personal data. There is no Orbit account and no Orbit server.</p>
+
+  <h2>Data Orbit handles</h2>
+  <p>Orbit handles provider API keys, watchlist names, provider asset IDs, cached market quotes, refresh times, and display settings, and only when you choose to provide or create them.</p>
+  <p>Watchlists and quote caches stay in Chrome extension storage. API keys stay in the browser session. If you turn on <em>Remember this key</em>, Orbit encrypts provider keys with AES-256-GCM using a passphrase-derived key before storing the ciphertext locally. Orbit does not store the passphrase.</p>
+
+  <h2>Network requests</h2>
+  <p>While the popup or side panel is open, Orbit can send requests to the provider you selected: the CoinGecko Demo or Pro API, or the CoinMarketCap Pro API. Requests use the API key you supplied. Orbit does not send your key to an Orbit server, and Orbit has no Orbit server.</p>
+  <p>Orbit does not make market-data requests while the popup and side panel are both closed. It does not run background polling.</p>
+
+  <h2>Permissions</h2>
+  <ul>
+    <li><code>storage</code> saves local settings, watchlists, the quote cache, encrypted vault ciphertext, and session-only unlocked keys.</li>
+    <li><code>sidePanel</code> opens the full watchlist manager after your click.</li>
+    <li>Optional provider host permissions allow requests only to the provider API you connect.</li>
+  </ul>
+  <p>Orbit does not use content scripts, browsing history, page content, tabs access, ads, analytics, tracking pixels, or cloud sync.</p>
+
+  <h2>What Orbit will never ask for</h2>
+  <div class="note">
+    <p>Orbit will never ask you to connect a wallet, enter a seed phrase or private key, sign a transaction, provide a wallet address, or supply an exchange API key, including one marked read-only.</p>
+    <p>This is a design constraint rather than a policy promise. Orbit holds nothing that could authorize moving funds, so even a full compromise of the extension cannot cost you an asset.</p>
+  </div>
+
+  <h2>Your choices</h2>
+  <p>You can remove watchlists, clear cached quotes, lock keys, or reset the vault from Settings. Uninstalling the extension removes its Chrome extension storage according to Chrome storage behavior.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If the data Orbit handles changes, this page is updated before the change ships, and the change is described in the extension itself. The version of this policy that applies to a release is the one published here on that release date.</p>
+
+  <h2>Contact</h2>
+  <p>Email <a href="mailto:info@empyrus.net">info@empyrus.net</a> with any question about this policy or the extension.</p>
+  <p>Orbit Watchlist is built by <a href="https://maxavery.org/">Max Avery</a>. The source is public at <a href="https://github.com/highbaud/orbit-watchlist">github.com/highbaud/orbit-watchlist</a>, so every claim on this page can be checked against the code.</p>
+
+  <footer>Orbit Watchlist displays figures you enter and prices you request. It is not investment advice and gives no recommendation to buy, sell, or hold anything.</footer>
+
+</div>
+</body>
+</html>
