@@ -1,7 +1,8 @@
 # Orbit Watchlist: agent conventions
 
-`HANDOFF.md` at the repo root is the source of truth for project state, file map, commands,
-and the standing rules. Read it before making changes.
+Read the relevant section of `HANDOFF.md` when resuming queued work, checking setup or
+verification commands, or investigating a recorded gotcha. Confirm recorded state against the
+current source before relying on it. Preserve the standing rules below on every change.
 
 Short version of the rules that must not be broken:
 
