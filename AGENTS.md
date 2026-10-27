@@ -1,7 +1,7 @@
 # Orbit Watchlist: agent conventions
 
-Read the relevant section of `HANDOFF.md` when resuming queued work, checking setup or
-verification commands, or investigating a recorded gotcha. Confirm recorded state against the
+Read `HANDOFF.md` in full when resuming work: it is short on purpose. It covers state, setup and
+verification commands, and the recorded gotchas. Confirm recorded state against the
 current source before relying on it. Preserve the standing rules below on every change.
 
 Short version of the rules that must not be broken:
